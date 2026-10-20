@@ -1,63 +1,122 @@
-# Teach
+# teach
 
-A reusable AI teaching skill for any subject: concepts, practical skills, creative work, languages, or habits. It adapts to the learner's goal and experience, gives feedback on real attempts, and saves enough context for future sessions to resume.
+A teaching skill for AI agents, and a small web app that sets up your course. You pick a subject, say why you want it, shape a map of the skills it takes, and answer a few adaptive questions. The app saves a course folder of plain Markdown files. Any agent with the skill installed (Claude Code, Codex, pi, Hermes, OpenClaw) then teaches from that folder, one short session at a time, and any other agent can pick up where the last one stopped.
 
-## What it adapts
+The method follows Alpha School and its Timeback platform: find where the learner actually is, teach one skill at a time, advance only on demonstrated mastery, and bring each skill back before it fades.
 
-| Learning goal | Possible lesson | Evidence of progress |
-| --- | --- | --- |
-| Understand a scientific field | Trace a mechanism and interpret a study | Explain what the evidence supports and apply it to a new case |
-| Learn mathematics | Work through a problem with gradually reduced support | Solve and explain an unfamiliar problem |
-| Learn a language | Listen, converse, and revise an answer | Communicate meaning in a new situation |
-| Improve writing or music | Create a short piece and revise from critique | Explain and apply a deliberate improvement |
-| Learn programming or a craft | Build, debug, repair, or perform a small task | Produce a working result and explain the method |
-| Study history or philosophy | Compare original sources and interpretations | Make an argument grounded in the material |
-| Build a practice habit | Choose a feasible action and review what happened | Report consistency and adjust obstacles separately from skill mastery |
+## How it teaches
 
-These illustrate possible uses, not a predefined course. The skill selects the content, examples, sources, and exercises from each learner's topic. Lessons can use chat, Markdown, worked examples, code, diagrams, HTML, audio, video, or real-world activity. Multimedia and community participation are optional.
+- **Placement first.** An adaptive check finds what you already know, so lesson one starts at your edge, not at chapter one.
+- **One skill per lesson.** A skill is something you can do ("compute a number needed to treat"), not a topic ("statistics").
+- **Recall, not recognition.** You produce answers: explain, compute, predict. Multiple choice is for warm-ups only.
+- **Practice at 80–85% correct.** Easier than that and you're coasting; harder and something underneath is missing.
+- **A 90% mastery gate.** A skill counts as learned when you get at least 90% on five or more fresh questions with no hints. "Makes sense" doesn't count.
+- **Reviews first.** Each mastered skill comes back after 1, 3, 7, 16, 35 and 90 days, and every session opens with the reviews that are due.
+- **Built around your reason.** Examples and practice come from the situation you described, not from textbook generics.
 
-## Install and use
+The gate and the review schedule do most of the work. Plenty of tutoring feels productive because explanations are fluent in the moment. The gate refuses to count that feeling, and the reviews test whether the skill survived a week. Everything else (placement, small skills, practice difficulty) exists so you reach the gate quickly and pass it honestly.
 
-Copy the repository's contents into your assistant's skill directory as `teach/`, keeping `SKILL.md` and the format documents together. In the shared user skills directory used by this Codex installation, the entry point is `~/.agents/skills/teach/SKILL.md`.
+## Quick start
 
-Invoke `teach` through your assistant's skill picker or supported syntax in the workspace where you want your course stored. Invocation syntax varies by runtime; notes for additional runtimes are in `adapters/`.
+You need Python 3.10 or newer and [uv](https://docs.astral.sh/uv/).
 
-Possible starting requests:
+```bash
+git clone https://github.com/ChrisWhiteSr/teach-skill
+cd teach-skill
+export ANTHROPIC_API_KEY=...        # or run `ant auth login` once
+uv run teach-onboard --open
+```
 
-- "Teach me enough statistics to interpret a research paper. I understand algebra."
-- "Help me learn conversational Italian through short practice sessions."
-- "I want to understand medieval history using original sources."
-- "Help me build a regular drawing practice and improve from critique."
-- "Resume my course from the saved checkpoint."
+The page opens at `http://localhost:8765`. When you finish, it shows the course folder it saved (by default `~/teach-courses/<subject>/`). Install the skill in your agent (below), open the agent in that folder, and say "continue my course".
 
-The skill first uses available context and a short diagnostic, then chooses a useful next step. It does not require a long intake or a complete bibliography before teaching can begin.
+To look around without an API key, run `uv run teach-onboard --provider fake --open`. The fake provider returns canned questions, so it only shows how the flow works.
 
-## Persistent learning state
+## The onboarding app
 
-| Path | Purpose |
-| --- | --- |
-| `MISSION.md` | Purpose, outcomes, and constraints |
-| `CURRICULUM.md` or existing plan | Learning sequence and prerequisites |
-| `PROGRESS.md` or existing checkpoint | Current lesson status and exact next action |
-| `RESOURCES.md` | Annotated sources and practice materials |
-| `NOTES.md` | Preferences and working notes |
-| `learning-records/` | Reported background and evidence of understanding |
-| `lessons/` | Lesson artifacts in suitable formats |
-| `reference/` and optional `GLOSSARY.md` | Reusable references and vocabulary |
-| Optional `assets/` | Shared styles, media, and interactive components |
+| Option | Default | What it does |
+|---|---|---|
+| `--provider` | `anthropic` | `anthropic` (Claude API), `bedrock` (Claude on Amazon Bedrock) or `fake` |
+| `--model` | `claude-opus-5-5` | Any Claude model id. On Bedrock the default is `us.anthropic.claude-opus-5-5`. |
+| `--courses-dir` | `$TEACH_HOME`, else `~/teach-courses` | Where course folders are saved |
+| `--packs-dir` | none | An extra folder of course packs |
+| `--host`, `--port` | `127.0.0.1`, `8765` | Where the app listens |
 
-Existing workspace conventions are reused. Files and folders are created when needed. Material introduced, an exercise attempted, and independent understanding demonstrated are tracked separately. Quiz interactions are not automatically available to the AI.
+**Claude API.** Credentials come from `ANTHROPIC_API_KEY`, `ANTHROPIC_AUTH_TOKEN` or an `ant auth login` profile. Requests opt into server-side refusal fallbacks, so if a safety classifier declines a request the API retries it on a fallback model instead of failing.
 
-To resume with an assistant that can access the workspace, ask:
+**Amazon Bedrock.** Install the extra and point it at your AWS profile and region:
 
-> Read my learning mission, progress checkpoint, notes, and relevant learning records. Resume at the saved next exercise and update the checkpoint when we finish.
+```bash
+AWS_PROFILE=my-profile AWS_REGION=us-east-1 uv run --extra bedrock teach-onboard --provider bedrock
+```
 
-Automatic file discovery varies by assistant. When file access is unavailable, the skill can provide a portable checkpoint to save or paste into a later session.
+`TEACH_AWS_PROFILE` overrides `AWS_PROFILE` if you keep a separate profile for model access.
 
-## Repository contents
+**What a session costs.** Expect about 30 model calls: one to review your mission, one to draft the map, and one each to write and grade every placement question. While you answer, the app writes the next question for both outcomes (right or wrong) so you aren't kept waiting. That makes about 1.5 times as many question-writing calls as questions asked.
 
-- `SKILL.md`: the adaptive teaching workflow.
-- `*-FORMAT.md`: concise templates for missions, resources, terminology, learning records, and progress.
-- `adapters/`: runtime integration notes.
+**Privacy.** The app runs on your machine and listens only on localhost. It has no login, so think before you pass `--host`. Your answers go to the model provider you chose, and the course is written only inside the courses folder. It never overwrites a folder that already has files in it.
 
-Individual courses and learner records belong in their teaching workspaces. This repository distributes the reusable skill and its templates.
+## Install the skill
+
+Copy the whole `skill/` folder into your agent's skills folder and name it `teach`. `SKILL.md` reads its reference files from the same folder.
+
+| Agent | Folder |
+|---|---|
+| Claude Code | `~/.claude/skills/teach/` |
+| Codex | `~/.agents/skills/teach/` (older versions: `~/.codex/skills/teach/`) |
+| pi | `~/.pi/agent/skills/teach/` |
+| Hermes | `~/.hermes/skills/teach/` |
+| OpenClaw | `~/.openclaw/skills/teach/` |
+
+For example, `cp -r skill ~/.claude/skills/teach`. Notes for each runtime are in [`skill/adapters/`](skill/adapters/). The skill also works without the app: say "teach me X" and the agent runs the mission interview and placement in chat.
+
+## The course folder
+
+| File | Holds |
+|---|---|
+| `MISSION.md` | Why you're learning this and what success looks like |
+| `MAP.md` | Every skill, its prerequisites, your status and the next review date. This is the file every agent reads first. |
+| `LOG.md` | One line per session: date, agent, minutes, XP, scores |
+| `RESOURCES.md` | Sources and communities. Sources the model suggested are tagged `#needs-verification` until a lesson checks them. |
+| `lessons/`, `reference/`, `GLOSSARY.md`, `learning-records/` | Written by the agent as you go |
+| `.teach/placement.json` | Every placement question, answer and grade |
+
+Formats are specified in [`skill/references/`](skill/references/), so anything that writes them correctly can take part. Another app, a script or a person editing by hand would all work.
+
+## How placement works
+
+Placement starts in the middle of the map. A correct answer is confirmed with a second question on the same skill, and then placement jumps up the map. A miss steps down toward that skill's prerequisites. Two correct answers place a skill as mastered, and its prerequisites count as known by inference; their first review, the next day, confirms or demotes them. A skill above a gap stays "to learn". Placement stops after 12 questions, or sooner once every skill is settled.
+
+At the end you see every question, your answer, the model answer and the grade. If the grader got one wrong you can ask for a regrade before saving.
+
+The placement rules live in code ([`src/teach_onboard/engine.py`](src/teach_onboard/engine.py)), not in a prompt. The model writes questions and grades answers, and code decides where you start. The numbers come from [`skill/method.yaml`](skill/method.yaml), which the skill states in prose too; a test fails if the two disagree.
+
+## Course packs
+
+A pack fixes the skill map and sources for a known course, and can include a question bank so placement doesn't rely on generated questions. [`packs/git-basics/pack.yaml`](packs/git-basics/pack.yaml) is a complete example. Put your own packs in a folder and pass `--packs-dir`.
+
+## Where the method comes from
+
+- [Timeback principles](https://docs.timeback.com/beta/about-timeback/principles): the 90% mastery gate, 1 XP per focused minute, no XP below 80% accuracy, recall over recognition.
+- [Alpha School on AI and gamification](https://alpha.school/blog/how-ai-and-gamification-transform-learning-at-alpha-school/): 25-minute focus blocks, the 80–85% difficulty band, the "waste meter" for unproductive habits.
+- [Math Academy](https://mathacademy.com/how-it-works) and Justin Skycak's [Fractional Implicit Repetition](https://justinmath.com/individualized-spaced-repetition-in-hierarchical-knowledge-structures/): the skill map with prerequisites, and counting practice on advanced skills as review of their foundations.
+
+Alpha School's outcome claims come from the school itself; I haven't found an independent evaluation. The design choices here are reasoned from published principles, not proven by a trial. [`skill/references/method.md`](skill/references/method.md) maps each mechanism to its source and lists what was left out on purpose: camera-based attention tracking, cash rewards, and the fixed two-hour day.
+
+This skill began as Matt Pocock's `teach` skill in [mattpocock/skills](https://github.com/mattpocock/skills) (MIT). The knowledge, skills and wisdom framing, and the course-file formats, come from there.
+
+## Development
+
+```bash
+uv run pytest
+```
+
+| Path | Contents |
+|---|---|
+| `skill/` | The agent skill: `SKILL.md`, `method.yaml`, reference formats, runtime adapters |
+| `src/teach_onboard/` | The onboarding app: engine, course writer, model providers, prompts, server, static page |
+| `packs/` | Course packs |
+| `tests/` | Engine, course files, rule sync, full flow, HTTP, and the shape of the Claude API request |
+
+## License
+
+MIT. See [LICENSE](LICENSE).

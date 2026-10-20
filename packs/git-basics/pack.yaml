@@ -1,0 +1,113 @@
+# Example course pack. A pack fixes the skill map and sources for a known course, and can carry a
+# question bank so placement doesn't depend on generated questions. Skills without items fall back to
+# model-written questions. Each skill needs at least two items to place it from the bank alone.
+title: Git basics
+subject: Git version control
+description: Everyday Git for people who use it by copy-paste today.
+
+skills:
+  - id: S1
+    skill: explain what a commit is and what it records
+    needs: []
+    items:
+      - question: In your own words, what does a Git commit store, and how does it connect to the commits before it?
+        answer: A snapshot of the tracked files at that moment, plus metadata (author, date, message) and a pointer to its parent commit(s), which chains commits into history.
+        rubric: ["a snapshot of the project's files, not just a diff", "metadata such as author and message", "a link to the parent commit(s)"]
+      - question: Two commits have different hashes even though they contain identical files. Give a reason that can happen.
+        answer: The hash covers the metadata and parent too, so a different message, author, timestamp or parent changes the hash.
+        rubric: ["the hash depends on more than file contents", "names at least one of message, author, time or parent"]
+
+  - id: S2
+    skill: explain the working tree, the staging area and the repository, and say where a change sits
+    needs: [S1]
+    items:
+      - question: You edit report.txt and run git add report.txt, then edit it again. What does git commit now record for that file, and why?
+        answer: The version from when you ran git add. The staging area holds that snapshot; the later edit is only in the working tree until you add it again.
+        rubric: ["commits the staged version, not the latest edit", "explains the staging area holds a snapshot separate from the working tree"]
+      - question: What is the staging area for? Why not commit every changed file automatically?
+        answer: It lets you choose exactly what goes into the next commit, so you can split work into focused commits and leave other changes out.
+        rubric: ["you choose what goes into the next commit", "allows focused or partial commits"]
+
+  - id: S3
+    skill: commit only the changes you choose, with a useful message
+    needs: [S2]
+    items:
+      - question: You changed app.py and notes.txt but only want app.py in the next commit. Which commands do you run?
+        answer: git add app.py, then git commit -m "message". notes.txt stays modified but uncommitted.
+        rubric: ["stages only app.py", "commits with a message"]
+      - question: What makes a commit message useful to someone reading the history a year from now?
+        answer: A short summary line saying what changed, and if needed a body explaining why the change was made.
+        rubric: ["a concise summary of what changed", "the reason or context for the change"]
+
+  - id: S4
+    skill: read the history and see what a commit changed
+    needs: [S1]
+    items:
+      - question: How would you list recent commits, and then see exactly what one of them changed?
+        answer: git log (or git log --oneline) to list commits, then git show <hash> to see that commit's changes.
+        rubric: ["git log to list history", "git show with a commit id (or git diff between commits)"]
+      - question: What's the difference between git diff and git diff --staged?
+        answer: git diff shows changes in the working tree that are not staged; git diff --staged shows what is staged for the next commit.
+        rubric: ["plain diff shows unstaged changes", "--staged shows staged changes"]
+
+  - id: S5
+    skill: explain what a branch is, and create and switch branches
+    needs: [S1]
+    items:
+      - question: What is a branch in Git, underneath?
+        answer: A movable label (pointer) to a commit. Committing on the branch moves the label forward to the new commit.
+        rubric: ["a pointer or label to a commit", "it moves forward as you commit"]
+      - question: How do you start a new branch called fix-typo from where you are and move onto it?
+        answer: git switch -c fix-typo (or git checkout -b fix-typo).
+        rubric: ["creates the branch and switches to it in one step, or with branch then switch"]
+
+  - id: S6
+    skill: merge a branch and resolve a simple conflict
+    needs: [S3, S5]
+    items:
+      - question: A merge stops with a conflict in config.yml. What do you do to finish it?
+        answer: Open config.yml, edit the conflict-marked section to the content you want and remove the markers, then git add config.yml and git commit (or git merge --continue).
+        rubric: ["edit the file to resolve the marked section", "remove the conflict markers", "stage the file and complete the merge"]
+      - question: Why does a merge sometimes create a new commit and sometimes not?
+        answer: If the current branch hasn't moved since the other branch split off, Git just moves the pointer forward (fast-forward). If both have new commits, it makes a merge commit with two parents.
+        rubric: ["fast-forward when only one side has new commits", "merge commit with two parents when both sides changed"]
+
+  - id: S7
+    skill: work with a remote (clone, fetch, pull, push)
+    needs: [S5]
+    items:
+      - question: What's the difference between git fetch and git pull?
+        answer: fetch downloads new commits from the remote and updates remote-tracking branches without touching your branch; pull fetches and then merges (or rebases) them into your current branch.
+        rubric: ["fetch only downloads and updates remote-tracking refs", "pull also integrates into the current branch"]
+      - question: git push is rejected because the remote has commits you don't have. What do you do?
+        answer: Pull (fetch and merge or rebase) the remote changes, resolve any conflicts, then push again. Don't force-push over other people's work.
+        rubric: ["integrate the remote commits first, by pull or fetch plus merge/rebase", "then push again", "avoid force-pushing shared work"]
+
+  - id: S8
+    skill: undo safely (discard a file change, amend the last commit, revert a pushed commit)
+    needs: [S3, S4, S7]
+    items:
+      - question: You pushed a commit that broke the build and others have pulled it. How do you undo it safely?
+        answer: git revert <hash>, which makes a new commit that reverses it, then push. Don't rewrite shared history with reset.
+        rubric: ["git revert creates a new commit undoing the change", "avoids rewriting pushed history"]
+      - question: You just committed (not pushed) and forgot to include one file. How do you fix the commit?
+        answer: git add the file, then git commit --amend to replace the last commit with one that includes it.
+        rubric: ["stage the missing file", "git commit --amend"]
+
+resources:
+  - title: Pro Git (Scott Chacon and Ben Straub)
+    url: https://git-scm.com/book/en/v2
+    kind: book
+    use: The free reference book. Chapters 2 and 3 cover everything in this course.
+  - title: Git reference documentation
+    url: https://git-scm.com/docs
+    kind: docs
+    use: Exact behaviour and options of each command.
+  - title: Learn Git Branching
+    url: https://learngitbranching.js.org/
+    kind: course
+    use: Interactive, visual practice for branches, merges and remotes.
+  - title: Stack Overflow, git tag
+    url: https://stackoverflow.com/questions/tagged/git
+    kind: community
+    use: Search before asking; most Git problems have been answered here.

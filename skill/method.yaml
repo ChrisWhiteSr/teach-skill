@@ -1,0 +1,24 @@
+# The numbers behind the teach method.
+# SKILL.md states the same values in prose so an agent never has to open this file.
+# tests/test_method_sync.py fails if the two drift apart. The onboarding app reads this file.
+
+mastery_threshold: 0.90        # share of mastery-check items correct to call a skill mastered
+mastery_min_items: 5           # items in a mastery check, at least
+practice_band: [0.80, 0.85]    # target accuracy while practising
+xp_min_accuracy: 0.80          # sessions below this earn zero XP
+session_minutes: 25            # default focused block
+
+review_intervals_days: [1, 3, 7, 16, 35, 90]   # step 0, 1, 2 ... after mastery
+review_interval_after_days: 180                # every step past the list
+max_reviews_per_session: 8
+
+placement:
+  min_items: 6
+  max_items: 12
+  correct_to_place: 2          # correct, unaided items on a skill to place it as mastered
+  tested_start_step: 1         # review step for a skill placed by testing (first review in 3 days)
+  inferred_start_step: 0       # review step for a skill inferred from a mastered dependant (review tomorrow)
+
+map:
+  min_skills: 8
+  max_skills: 20

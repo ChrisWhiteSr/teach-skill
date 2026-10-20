@@ -1,36 +1,19 @@
-# Runtime Adapter: teach → openclaw
+# Runtime adapter: teach in OpenClaw
 
-## Compatibility
+## Installation
 
-- Supported: yes
-- Reason: OpenClaw has filesystem read/write/edit, shell exec for opening lesson files, and can generate HTML. No special infrastructure needed.
+Place `SKILL.md` and the format documents together in the configured skill directory. The installation convention used by these notes is `~/.openclaw/workspace/skills/teach/`; confirm the actual directory in your environment.
 
-## Native Installation Target
+Run the skill from the learner's course workspace. Read its checkpoint, mission, and relevant learning records before resuming.
 
-`~/.openclaw/workspace/skills/teach/SKILL.md` + format files alongside.
+## Capability mapping
 
-## Required Tool Mapping
+| Teaching need | Use when available |
+| --- | --- |
+| Read course state | File-reading tools |
+| Maintain lessons, learning records, and checkpoint | File-writing or editing tools |
+| Teach and give feedback | Conversation or artifacts in the chosen format |
+| Create interactive HTML | File writing and a browser for verification |
+| Find sources for the learner's subject | Web tools or supplied local materials |
 
-| Canonical capability | Runtime-specific tool/instruction |
-|---|---|
-| Read workspace files (MISSION.md, learning-records/) | `read` tool on vault/workspace path |
-| Write lessons, records, glossary | `write` / `edit` / `apply_patch` tools |
-| Open lesson HTML for user | `exec` running `open`/`xdg-open`, or shell command |
-| Generate HTML lessons | Model generation → `write` to `./lessons/*.html` |
-| Curate RESOURCES.md from web | `web_search` + `web_fetch` to evaluate sources |
-
-## Import / Compile Steps
-
-1. Copy `skill.md` + all format files (`*-FORMAT.md`) into the OpenClaw skill folder.
-2. No content changes needed — the skill is runtime-agnostic.
-3. Ensure the working directory when invoked is the teaching workspace.
-
-## Safety Checks
-
-- `writes-files` — creates/edits files in the current workspace directory only.
-- Lessons are HTML; no script execution by default.
-
-## Known Gaps
-
-- OpenClaw's mandatory skill selection may load this on any "learn" mention; verify the description trigger is specific enough.
-- No automatic spaced-repetition scheduling — the agent must re-engage across sessions manually or via cron.
+Use the core skill's subject selection and lesson-format guidance. Interactive HTML is one option; lessons can also use text, code, media, or real-world practice. Configure invocation and any scheduled review using capabilities actually available in the active runtime, respecting the learner's preferences.

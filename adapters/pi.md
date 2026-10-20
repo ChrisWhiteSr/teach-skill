@@ -1,35 +1,19 @@
-# Runtime Adapter: teach → pi
+# Runtime adapter: teach in pi
 
-## Compatibility
+## Installation
 
-- Supported: yes
-- Reason: pi has `read`, `write`, `edit`, and `bash` — sufficient to run the full teaching workflow. Particularly strong at precise file edits for maintaining MISSION.md/RESOURCES.md incrementally.
+Place `SKILL.md` and the format documents together in the configured skill directory. The installation convention used by these notes is `~/.pi/agent/skills/teach/`; confirm the actual directory in your environment.
 
-## Native Installation Target
+Use the runtime's supported invocation syntax, such as `/skill:teach` where available, from the learner's course workspace. Read its checkpoint, mission, and relevant learning records before resuming.
 
-`~/.pi/agent/skills/teach/SKILL.md` + format files alongside.
+## Capability mapping
 
-## Required Tool Mapping
+| Teaching need | Use when available |
+| --- | --- |
+| Read course state | File-reading tools |
+| Maintain lessons, learning records, and checkpoint | File-writing or editing tools |
+| Teach and give feedback | Conversation or artifacts in the chosen format |
+| Create interactive HTML | File writing and a browser for verification |
+| Find sources for the learner's subject | An available web tool, supplied files, or a suitable research integration |
 
-| Canonical capability | Runtime-specific tool/instruction |
-|---|---|
-| Read workspace files | `read` tool |
-| Write/edit lessons, records, glossary | `write` (new files) + `edit` (precise updates to existing) |
-| Open lesson HTML for user | `bash` running `open`/`xdg-open` |
-| Generate HTML lessons | model generation → `write` to `./lessons/*.html` |
-| Curate RESOURCES.md | `bash` web fetch + `read` to evaluate; or web skill if installed |
-
-## Import / Compile Steps
-
-1. Copy `skill.md` + format files into `~/.pi/agent/skills/teach/`.
-2. Invoke via `/skill:teach` in a session whose working directory is the teaching workspace.
-
-## Safety Checks
-
-- `writes-files` — confined to the workspace directory.
-
-## Known Gaps
-
-- pi has no built-in web search; RESOURCES.md curation needs a web skill installed or `bash` curl + `read`.
-- pi sessions are per-directory; the teaching workspace should be a dedicated directory.
-- No automatic scheduling — re-engagement requires a new session or external cron.
+Use the core skill's subject selection and lesson-format guidance. Do not assume web search or scheduling is present. Save a review prompt in the checkpoint when no requested scheduling integration is available; offer a portable checkpoint if file writing is unavailable.

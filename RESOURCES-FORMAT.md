@@ -1,32 +1,37 @@
-# RESOURCES.md Format
+# Learning resources
 
-`RESOURCES.md` is the curated set of trusted sources for this topic. Knowledge for explainers should be drawn from here, not from parametric guesses. Wisdom comes from the communities listed here.
+`RESOURCES.md` holds a small, annotated set of sources and materials selected for this learner's goal. Use the sections that fit the subject; omit empty ones.
 
-## Structure
+## Template
 
 ```md
-# {Topic} Resources
+# {Subject} resources
 
-## Knowledge
+## Core sources
+- [{Resource title}]({Verified URL or relative local path})
+  Covers: {Specific concept or capability}.
+  Use for: {When and how the learner should use it}.
+  Level and limits: {Prerequisites, edition/date, scope, or access limitations when relevant}.
 
-- [Book: _The Science and Practice of Strength Training_ — Zatsiorsky & Kraemer](https://example.com)
-  Foundational text on programming and adaptation. Use for: anything to do with periodisation, recovery, intensity zones.
-- [Article: "How Much Should I Train?" — Greg Nuckols (Stronger By Science)](https://example.com)
-  Evidence-based review of volume landmarks. Use for: weekly set targets per muscle group.
+## Practice materials
+- {Problem set, dataset, original work, recording, object, project, or other task material}.
+  Use for: {A concrete exercise and how feedback is obtained}.
 
-## Wisdom (Communities)
+## People and communities, if wanted
+- {Expert, class, peer group, or moderated community}.
+  Use for: {The kind of critique or real-world interaction it offers}.
 
-- [r/weightroom](https://reddit.com/r/weightroom)
-  High-signal subreddit, moderated against bro-science. Use for: programme critique, plateau troubleshooting.
-- Local: Tuesday strength class at {gym name}
-  Use for: real-time coaching feedback on lifts.
+## Gaps
+- {Material needed for an upcoming learning outcome and why it is missing}.
 ```
 
-## Rules
+## Selection guidance
 
-- **High-trust only.** Prefer primary sources, recognised experts, peer-reviewed work, and communities with strong moderation. If a resource is marketing dressed as education, leave it out.
-- **Annotate every entry.** A bare link is useless in three months. Add one line: what it covers and when to reach for it.
-- **Group by Knowledge / Wisdom.** Mirrors the philosophy in [SKILL.md](./SKILL.md). It is fine for a resource to appear in only one group.
-- **Surface gaps explicitly.** If no good resource exists for an area the mission needs, write a `## Gaps` section listing what is missing. This drives future search.
-- **Prune ruthlessly.** A resource that turned out to be wrong, shallow, or off-mission should be removed, not buried. Better five sharp sources than thirty mediocre ones.
-- **Record community preferences.** If the user has opted out of joining communities, note it here so future sessions don't keep proposing them.
+- Match authority to the domain. Research may need papers and textbooks; software may need official documentation and examples; language learning may need recordings and conversations; arts and humanities may need original works, historical context, and critical perspectives.
+- Match difficulty to the learner. A dependable introduction may teach better than a specialist source; label optional deeper reading.
+- Explain why each entry is useful. A reading list is not a curriculum, and all collected sources need not become assignments.
+- Verify external links before assignment and distinguish checked page content from untested audio/video playback. Record dates or versions when they affect interpretation.
+- Keep original evidence, interpretation, and a practitioner's opinion distinguishable. Replace unreliable or irrelevant entries as they are discovered.
+- Respect preferences about paid resources, community participation, and media. Recommend interaction only when it serves the learner's goal.
+
+The template uses placeholders deliberately. Populate it from the selected topic and actual sources; never manufacture titles or URLs to complete the structure.

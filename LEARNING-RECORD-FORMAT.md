@@ -1,46 +1,25 @@
-# Learning Record Format
+# Learning records
 
-Learning records live in `./learning-records/` and use sequential numbering: `0001-slug.md`, `0002-slug.md`, etc. Create the directory lazily — only when the first record is written.
-
-They are the teaching equivalent of ADRs: they capture non-obvious lessons, key insights, and stated prior knowledge that will steer future sessions. They are used to calculate the zone of proximal development.
+Use `learning-records/NNNN-slug.md` to preserve evidence that should change future teaching. Read the existing numbering and increment it. Create the folder with the first meaningful record.
 
 ## Template
 
 ```md
-# {Short title of what was learned or established}
+# {What was established}
 
-{1-3 sentences: what was learned (or what prior knowledge was established), and why it matters for future sessions.}
+{What the learner explained, produced, performed, or reported; the relevant task or context; and what this implies for the next lesson.}
 ```
 
-That is the whole format. A learning record can be a single paragraph. The value is recording _that_ this is now known and _why_ it changes what to teach next — not in filling out sections.
+Add a date, supporting artifact link, or limitations when helpful. A brief paragraph is enough. Distinguish these cases:
 
-## Optional sections
+- **Reported background:** the learner describes prior experience; note the claimed depth without treating it as a tested capability.
+- **Demonstrated understanding:** the learner independently explains or applies a concept, solves a problem, makes a revision, or performs an observable task. Record what was actually observed and any scaffolding used.
+- **Corrected misconception:** a later response shows changed reasoning. The teacher providing a correction is not sufficient evidence.
+- **Retention or transfer:** a later attempt or unfamiliar example demonstrates durability or broader application. Do not infer either from immediate recognition.
+- **Goal change:** an established change to the learning mission affects what should be taught next.
 
-Only include these when they add genuine value. Most records won't need them.
+For work that cannot be observed directly, record the learner's report and the limits of available feedback. Practice consistency and skill mastery are different observations.
 
-- **Status** frontmatter (`active | superseded by LR-NNNN`) — useful when an earlier understanding turns out to be wrong and is replaced.
-- **Evidence** — how the user demonstrated the understanding (a question answered, an exercise completed, prior experience cited). Useful when the claim might be revisited.
-- **Implications** — what this unlocks or rules out for future sessions. Worth recording when non-obvious.
+Do not create a learning record simply because material was delivered. Put lesson status, pending exercises, and session logistics in the progress checkpoint; put terminology in the glossary and preferences in notes.
 
-## Numbering
-
-Scan `./learning-records/` for the highest existing number and increment by one.
-
-## When to write a learning record
-
-Write one when any of these is true:
-
-1. **The user demonstrated genuine understanding of something non-trivial** — not just exposure, but evidence they can use the concept correctly. This sets a new floor for what to teach next.
-2. **The user disclosed prior knowledge** — "I already know X." Record it so future sessions don't re-teach it. Also record the _depth_ claimed.
-3. **A misconception was corrected** — the user previously believed something wrong and now sees why. These are high-value: they predict future stumbling blocks for related topics.
-4. **The mission shifted in response to learning** — the user discovered they cared about something different than they thought. Cross-link to [[MISSION.md]] and update it.
-
-### What does _not_ qualify
-
-- Material that was merely covered. Coverage is not learning. Wait for evidence.
-- Anything already captured tersely in [[GLOSSARY.md]] as a term definition. Don't duplicate.
-- Session-by-session activity logs. Learning records are not a journal — they are decision-grade insights.
-
-## Supersession
-
-When a later record contradicts an earlier one (the user's understanding deepened or corrected), mark the old record `Status: superseded by LR-NNNN` rather than deleting it. The history of how understanding evolved is itself useful signal.
+If later evidence changes a conclusion, link a new record and mark the earlier one as revised or superseded. Preserve enough history to explain the change.

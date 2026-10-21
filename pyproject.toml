@@ -1,7 +1,7 @@
 [project]
 name = "teach-onboard"
-version = "0.2.0"
-description = "Browser onboarding for the teach skill: set a mission, shape a skill map, run an adaptive placement, and save a course any agent can teach from."
+version = "0.3.0"
+description = "Browser onboarding and a local lesson runner for the teach skill: set a mission, shape a skill map, run an adaptive placement, then save answers and get feedback in HTML lessons."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"

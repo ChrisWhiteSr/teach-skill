@@ -1,3 +1,3 @@
-"""Onboarding web app for the teach skill: pick a subject, set the mission, shape the map, run placement."""
+"""The teach skill's local apps: onboarding (mission, map, placement) and the lesson runner (`teach-onboard serve`)."""
 
-__version__ = "0.2.0"
+__version__ = "0.3.0"

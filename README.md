@@ -1,6 +1,6 @@
 # teach
 
-A teaching skill for AI agents, and a small web app that sets up your course. You pick a subject, say why you want it, shape a map of the skills it takes, and answer a few adaptive questions. The app saves a course folder of plain Markdown files. Any agent with the skill installed (Claude Code, Codex, pi, Hermes, OpenClaw) then teaches from that folder, one short session at a time, and any other agent can pick up where the last one stopped.
+A teaching skill for AI agents, a small web app that sets up your course, and a local lesson runner for its HTML lessons. You pick a subject, say why you want it, shape a map of the skills it takes, and answer a few adaptive questions. The app saves a course folder of plain Markdown files. Any agent with the skill installed (Claude Code, Codex, pi, Hermes, OpenClaw) then teaches from that folder, one short session at a time, and any other agent can pick up where the last one stopped.
 
 The method follows Alpha School and its Timeback platform: find where the learner actually is, teach one skill at a time, advance only on demonstrated mastery, and bring each skill back before it fades.
 
@@ -78,9 +78,43 @@ For example, `cp -r skill ~/.claude/skills/teach`. Notes for each runtime are in
 | `LOG.md` | One line per session: date, agent, minutes, XP, scores |
 | `RESOURCES.md` | Sources and communities. Sources the model suggested are tagged `#needs-verification` until a lesson checks them. |
 | `lessons/`, `reference/`, `GLOSSARY.md`, `learning-records/` | Written by the agent as you go |
-| `.teach/placement.json` | Every placement question, answer and grade |
+| `answers/` | Answers you saved in an HTML lesson, with the teacher's feedback under each one |
+| `assets/` | Shared lesson components, including the lesson kit |
+| `.teach/` | `placement.json` (every placement question, answer and grade), and the lesson runner's `jobs.json` and `events.jsonl` |
 
 Formats are specified in [`skill/references/`](skill/references/), so anything that writes them correctly can take part. Another app, a script or a person editing by hand would all work.
+
+## The lesson runner
+
+HTML lessons use the **lesson kit** (`skill/assets/lesson-kit.js` and `lesson-kit.css`, no dependencies). The skill copies it into the course's `assets/` folder with the first HTML lesson, and `skill/assets/lesson-template.html` is a starting point. The kit gives every lesson answer boxes for free-text recall items, warm-up quizzes and a finish panel. The markup is described in [`skill/references/lesson-design.md`](skill/references/lesson-design.md).
+
+Serve a course folder to save answers and get feedback in the page:
+
+```bash
+uv run teach-onboard serve ~/teach-courses/git-version-control --install-kit --open
+```
+
+The course page opens at `http://localhost:8766/` and lists the lessons. In a lesson:
+
+- **Save my answer** files the answer in `answers/<lesson>.md`, in the format of [`skill/references/answers-format.md`](skill/references/answers-format.md).
+- **Finish and get feedback** runs a review in the background. The model judges each waiting answer (correct, partial or incorrect) and writes feedback under it, which then appears under the box. Code, not the model, applies the skill's rules to those judgments: a skill becomes mastered only through a full check of five or more first answers at 90% or better, quiz clicks never change `MAP.md`, and a learning record is written only for a corrected misconception, disclosed prior knowledge or a mission shift. `MAP.md` and `LOG.md` are updated as the skill's procedure says.
+- **Draft my next lesson** appears on the last lesson once it has feedback. A model writes the next lesson for the next skill in `MAP.md`, from the latest lesson as its template, after web research. It may cite only pages it retrieved or sources already in `RESOURCES.md`; every source is tagged `#needs-verification` (new ones are added to `RESOURCES.md` the same way) and the page is labelled AI-drafted until a person checks it.
+
+Jobs are kept in `.teach/jobs.json`, so closing the tab or restarting the server loses nothing. Run without a key using `--provider fake`. On Bedrock there is no web search, so drafts cite only `RESOURCES.md`.
+
+Opened as a plain file, or in a runtime with no browser, the kit still works: drafts stay in the browser, and **Copy for your teacher** copies the answer as an entry in the answers format. Paste it to any agent with the skill; the agent files it and writes the feedback.
+
+**Any agent can be the teacher.** The runner, a chat agent and a coding agent can all work on one course. Every writer hashes a shared file when it reads it and checks the hash before writing; if the file changed, it re-applies its change to the newer text instead of overwriting it (`skill/references/map-format.md`, "Writing shared files").
+
+| Option | Default | What it does |
+|---|---|---|
+| `course` | required | The course folder (the one with `MAP.md`) |
+| `--provider`, `--model` | `anthropic`, `claude-opus-5-5` | As for the onboarding app |
+| `--host`, `--port` | `127.0.0.1`, `8766` | Where the runner listens |
+| `--install-kit` | off | Copy the lesson kit into the course's `assets/` first |
+| `--open` | off | Open the course page in your browser |
+
+**Safety.** The runner listens only on localhost by default and has no login. It writes only inside the course folder and only to known files: `MAP.md`, `LOG.md`, `NOTES.md`, `RESOURCES.md`, `answers/*.md`, new numbered learning records, and its own `.teach/` state. It never edits an existing lesson. A drafted lesson is saved only as a new `lessons/NNNN-<slug>.html`, with every script except the kit removed, along with inline event handlers, frames and `javascript:` links. API requests must be JSON from a page the runner served (Host and Origin checks), so another website open in your browser cannot post answers or start model calls. A review is one model call; a draft is a few calls plus a handful of web searches and fetches.
 
 ## How placement works
 
@@ -112,10 +146,10 @@ uv run pytest
 
 | Path | Contents |
 |---|---|
-| `skill/` | The agent skill: `SKILL.md`, `method.yaml`, reference formats, runtime adapters |
-| `src/teach_onboard/` | The onboarding app: engine, course writer, model providers, prompts, server, static page |
+| `skill/` | The agent skill: `SKILL.md`, `method.yaml`, reference formats, runtime adapters, and the lesson kit in `assets/` |
+| `src/teach_onboard/` | The onboarding app (engine, course writer, model providers, prompts, server, static page) and the lesson runner (`runner.py`, `lesson_server.py`, `tutor.py`, `mastery.py`, `answers.py`, `files.py`, `jobs.py`) |
 | `packs/` | Course packs |
-| `tests/` | Engine, course files, rule sync, full flow, HTTP, and the shape of the Claude API request |
+| `tests/` | Engine, course files, rule sync, full flow, HTTP, the shape of the Claude API requests, and the lesson runner: answers format, confined and merged writes, script stripping, the mastery mapping, and its endpoints |
 
 ## License
 

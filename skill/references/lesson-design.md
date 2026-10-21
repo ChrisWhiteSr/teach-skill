@@ -96,6 +96,7 @@ When a model drafts the next lesson without a teacher in the conversation (the l
 - **Labelled.** The header says `AI-drafted on <date>; sources not yet checked by a person`.
 - **Stable facts only.** Leave out claims that go stale: current versions, prices, release status, rankings, "the latest". Teach what will still be true when the learner reviews it in 90 days.
 - **New file only.** A draft is saved as a new `lessons/NNNN-<slug>.html`. It never replaces a lesson, and it has no scripts other than the kit.
+- **Checking a draft.** Whoever checks it verifies each source against the claim it supports, removes the tags and the label, and adds `<link rel="next">` to the previous lesson (a drafter never edits an existing lesson).
 
 ## Reference sheets
 

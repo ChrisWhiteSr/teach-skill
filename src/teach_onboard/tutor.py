@@ -91,8 +91,8 @@ def _doc(tag: str, path: str, text: str) -> str:
 
 def _plain(text: str) -> str:
     """Safety net for the dash rule: number ranges become 'to', other dashes become commas."""
-    text = re.sub(r"(\d)\s*[–—]\s*(\d)", r"\1 to \2", text)
-    return re.sub(r"\s*[–—]\s*", ", ", text)
+    text = re.sub(r"(\d)\s*[\u2013\u2014]\s*(\d)", r"\1 to \2", text)
+    return re.sub(r"\s*[\u2013\u2014]\s*", ", ", text)
 
 
 def _records(runner) -> list[str]:
@@ -273,7 +273,7 @@ def _check_draft(out: dict, retrieved: set[str], allowed: set[str], label: str, 
         problems.append("End every source list item with #needs-verification.")
     if any(norm_url(s.get("url", "")) not in ok for s in out.get("sources", [])):
         problems.append("Every entry in sources must be a retrieved page or a RESOURCES.md entry.")
-    if re.search(r"[–—]", html):
+    if re.search(r"[\u2013\u2014]", html):
         problems.append("Replace em dashes and en dashes with commas, colons or parentheses.")
     return problems
 

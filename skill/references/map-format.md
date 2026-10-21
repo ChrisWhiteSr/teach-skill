@@ -42,10 +42,11 @@ Mission: [[MISSION]] · Updated: 2026-10-20 by claude-code
 - **Implicit review**: when a check on a skill correctly exercises a prerequisite, treat it as a passed review of that prerequisite.
 - **Missed items** keep the actual question and the wrong answer. They are tomorrow's practice items and the best predictor of the next stumble. Delete an entry once its skill is mastered.
 - **The map can change.** Add skills as the mission sharpens and remove ones the mission no longer needs. Note the change in the `Updated` line.
+- **Answers saved in a lesson page** follow the same rules. `answers-format.md` says which judged answers form a mastery check, which are reviews and which are practice. Quiz clicks never change a row.
 
 ## LOG.md
 
-One line per session, newest at the bottom. It gives the learner a visible record of progress, and gives the next agent the recent history.
+One line per session, newest at the bottom. Write it the way "Writing shared files" below describes. It gives the learner a visible record of progress, and gives the next agent the recent history.
 
 ```md
 # Session log: {Subject}
@@ -60,3 +61,16 @@ One line per session, newest at the bottom. It gives the learner a visible recor
 - **Minutes**: focused minutes. Estimate from message timestamps when you have them; otherwise ask the learner at close.
 - **XP**: one per focused minute. Zero if overall accuracy in the session was below 80%.
 - **Progress line for the close**: skills mastered out of the total (from `MAP.md`), XP over the last seven days, and the run of consecutive days with a session (from `LOG.md`).
+- **A review of saved answers** with no live session gets a line too, with `-` for minutes and XP and a note naming the lesson.
+
+## Writing shared files
+
+Any agent can be the teacher, and two can work on one course at once: a chat agent on the phone and a coding agent at the desk, or a person and the lesson runner. `MAP.md`, `LOG.md`, `NOTES.md`, `RESOURCES.md` and the files in `answers/` are shared state. Write them like this, every time.
+
+1. **Hash when you read.** Keep a hash of the text you read (`sha256sum MAP.md`, or your runtime's equivalent). Without a shell, keep the text itself.
+2. **Compare before you write.** Hash the file again just before writing. If it matches, write.
+3. **Changed? Merge, never overwrite.** Re-read the file and apply your change to the new text: edit only the rows and lines you meant to change, and append your new lines after the ones now there. Never write back the version you read earlier, because that silently deletes the other teacher's work.
+4. **Conflicting evidence.** If both versions changed the same row, keep the change backed by the newer evidence, and say what you kept in the `Updated` line (for example `Updated: 2026-10-22 by codex, merged with hermes review`).
+5. **Append-only files stay append-only.** Add to the end of `LOG.md` and answers files; never rewrite their earlier lines.
+
+When your runtime allows it, write to a temporary file in the same folder and rename it over the original, so a reader never sees half a file.

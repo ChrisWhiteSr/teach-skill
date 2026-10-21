@@ -7,5 +7,6 @@
 | Read and write the course folder | `read`, `write`, `edit` |
 | Find sources for `RESOURCES.md` | a web skill if installed; otherwise `bash` with `curl` |
 | Open an HTML lesson | `bash`: `open` or `xdg-open` |
+| Serve HTML lessons with saved answers (optional) | `bash`: `teach-onboard serve <course folder>` (see the repo README) |
 
 **Gaps:** no built-in web search, so source curation is slower without a web skill. pi sessions are tied to a directory; start pi in the course folder.

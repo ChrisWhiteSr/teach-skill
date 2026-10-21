@@ -1,6 +1,8 @@
 ---
 name: teach
 description: Teach someone a subject over many sessions with mastery learning (placement check, short focused lessons, a 90% mastery gate, spaced review). Use when someone says teach me, wants to learn or get good at a subject over time, asks to continue their course, or has reviews due.
+metadata:
+  version: 0.3.0
 ---
 
 # Teach
@@ -50,6 +52,8 @@ These hold in every session, in every runtime. Each one names the behaviour to r
 | `GLOSSARY.md` | Terms the learner can already use correctly | `references/glossary-format.md` |
 | `learning-records/` | Non-obvious insights: misconceptions fixed, prior knowledge claimed, mission shifts | `references/learning-record-format.md` |
 | `lessons/` | One file per lesson: what was taught, practice and check items | `references/lesson-design.md` |
+| `answers/` | Answers the learner saved in an HTML lesson, with the teacher's feedback under each | `references/answers-format.md` |
+| `assets/` | Shared lesson components, including the lesson kit from this skill's `assets/` | `references/lesson-design.md` |
 | `reference/` | Cheat sheets the learner will reopen | `references/lesson-design.md` |
 | `NOTES.md` | The learner's stated preferences about how they're taught | free-form |
 
@@ -57,11 +61,13 @@ These hold in every session, in every runtime. Each one names the behaviour to r
 
 ### 1. Orient (every session)
 
-Read `MISSION.md`, `MAP.md`, `NOTES.md` and the last five lines of `LOG.md`.
+Read `MISSION.md`, `MAP.md`, `NOTES.md` and the last five lines of `LOG.md`. Keep a hash of `MAP.md` and `LOG.md` as you read them (step 4 needs it). Check `answers/` for entries still waiting for feedback.
 
 - No course folder: go to step 2.
 - A folder made by the onboarding app: setup and placement are already done, so skip step 2. Sources it wrote are tagged `#needs-verification`; check a source before a lesson cites it, then remove the tag.
 - An older course folder that has `lessons/` or `learning-records/` but no `MAP.md`: build `MAP.md` from the mission and the records. Mark nothing mastered without evidence in a record. Then run a placement check (step 2d) on whatever the records claim, and continue.
+
+- Saved answers waiting for feedback: judge each one before anything else and write the feedback under it (`references/answers-format.md`). Then update `MAP.md` from the judgments exactly as step 3 would for the same items: only a full check of five or more first answers can make a skill mastered, and quiz clicks never count.
 
 **Done when** you can state the mission in one sentence, list the reviews due today, and name the next skill: the first skill in `MAP.md` that is not mastered and whose prerequisites all are.
 
@@ -95,6 +101,7 @@ c. **Mastery check (about 5 minutes).** At least five fresh recall items, not re
 
 ### 4. Close and record (every session)
 
+- Before writing `MAP.md` or `LOG.md`, check that neither changed since you read it. If one did, re-read it and merge your change into the new text; never overwrite another teacher's work ("Writing shared files" in `references/map-format.md`).
 - Update `MAP.md`: statuses, last date, next review, schedule step, best check score, missed items.
 - Append a line to `LOG.md`. XP is one per focused minute. A session whose overall accuracy fell below 80% earns zero XP.
 - Write the lesson file to `lessons/`. If the skill produced something worth reopening (a formula, a procedure, a diagram), create or update a sheet in `reference/`. Add to `GLOSSARY.md` only terms the learner used correctly today.
@@ -130,9 +137,11 @@ Teacher (you):
 
 The conversation is the lesson. That works in every runtime, including chat apps such as Telegram or Slack. Lesson files default to Markdown. Use HTML when the runtime can open a browser and the skill benefits from interaction (a quiz widget, a simulator), or when `NOTES.md` says the learner prefers it. The rules for both are in `references/lesson-design.md`.
 
+Every HTML lesson uses the lesson kit in this skill's `assets/` folder: answer boxes, quizzes and a finish panel. Copy it into the course's `assets/` with the first HTML lesson. Served with `teach-onboard serve <course folder>`, the page saves answers to `answers/` and can ask a model to review them or draft the next lesson. Opened as a plain file, it keeps drafts on the device and copies answers for the learner to paste to you. A drafted lesson stays labelled AI-drafted, with its sources tagged `#needs-verification`, until a person checks it (`references/lesson-design.md`, "Drafted lessons").
+
 ## Safety
 
-- Writes only inside the course folder.
+- Writes only inside the course folder. A lesson drafted by a model is saved only as a new file, with no scripts other than the lesson kit.
 - No external actions. Don't set up reminders or scheduled jobs unless the learner asks; `adapters/` says how for each runtime.
 
 ## Tests
@@ -147,3 +156,9 @@ Run these scenarios after any edit to this skill. Each describes the behaviour a
 6. In a chat app, "time for my review": reviews run one item per message, with no HTML, and `MAP.md` and `LOG.md` are updated.
 7. A practice run at 10/10: the next items get harder.
 8. Opened on a folder from the onboarding app: no mission interview or placement; the first session teaches the next skill in `MAP.md`.
+9. `answers/` has an entry waiting for feedback: the agent judges it first and replaces the waiting line with feedback in the format of `references/answers-format.md`, and the lesson page shows it under the box.
+10. A page review judges four of five check answers correct and one partial: the skill stays `learning`, the partial answer is written under Missed items, and no learning record is written.
+11. The learner clicks every quiz choice correctly and saves no answers: no status in `MAP.md` changes.
+12. Another agent saved `MAP.md` after this agent read it: this agent re-reads, merges its change into the new text, and the other agent's rows survive.
+13. "Draft my next lesson": the draft is a new `lessons/NNNN-<slug>.html` copied from the latest lesson's template, labelled AI-drafted, citing only retrieved sources or `RESOURCES.md`, each tagged `#needs-verification`, with no current-status claims and no scripts other than the kit.
+14. A lesson opened as a plain file in a chat-only runtime: the learner copies an answer for the teacher and pastes it; the agent appends it to `answers/` and judges it like any other answer.

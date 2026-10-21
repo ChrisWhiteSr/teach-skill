@@ -9,5 +9,6 @@
 | Read and write the course folder | Read, Write, Edit |
 | Find sources for `RESOURCES.md` | WebSearch, WebFetch |
 | Open an HTML lesson | Bash: `open` (macOS) or `xdg-open` (Linux) |
+| Serve HTML lessons with saved answers (optional) | Bash: `teach-onboard serve <course folder>` (see the repo README) |
 
 **Gaps:** Claude Code has no scheduler of its own. For review reminders, use a scheduled task or another runtime with cron, and only when the learner asks.

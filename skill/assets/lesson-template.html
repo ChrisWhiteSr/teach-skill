@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>0001 · S3: commit only the changes you choose</title>
+<link rel="stylesheet" href="../assets/course.css">
+<link rel="stylesheet" href="../assets/lesson-kit.css">
+<script defer src="../assets/lesson-kit.js"></script>
+<!-- <link rel="prev" href="0000-previous-lesson.html" title="Previous lesson title"> -->
+<!-- <link rel="next" href="0002-next-lesson.html" title="Next lesson title"> -->
+</head>
+<body>
+<!-- Starter lesson for the teach skill's lesson kit. Copy it to lessons/NNNN-<skill-slug>.html and replace
+     the content. The example teaches one skill from a Git basics course. -->
+<main data-skill="S3">
+<header>
+  <p class="eyebrow">Git basics / Lesson 0001</p>
+  <h1>0001 · S3: commit only the changes you choose</h1>
+  <p class="lead">You will stage exactly the files you mean to commit and write a message a reader can use.</p>
+  <p class="meta">About 20 minutes. Mission link: a clean history makes your pull requests easy to review.
+  Primary source: <a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, Recording Changes to the Repository</a>.</p>
+</header>
+
+<section aria-labelledby="warmup">
+  <h2 id="warmup">Warm-up</h2>
+  <div data-quiz="warmup-1" data-explanation="git add copies the file as it is now into the staging area. Later edits stay in the working tree until you add them again.">
+    <p>You run <code>git add app.py</code>, then edit app.py again. What will the next commit record?</p>
+    <button data-correct="true">The version from when you ran git add</button>
+    <button data-correct="false">The version from after your last edit</button>
+    <p role="status"></p>
+  </div>
+</section>
+
+<section aria-labelledby="example">
+  <h2 id="example">Worked example</h2>
+  <p>You fixed a bug in <code>app.py</code> and also jotted ideas in <code>notes.txt</code>. Only the fix belongs in the commit:</p>
+  <pre><code>git status
+git add app.py
+git commit -m "Fix the login check for empty passwords"</code></pre>
+  <p><code>notes.txt</code> stays modified and uncommitted (<a href="#s1">[1]</a>).</p>
+</section>
+
+<section aria-labelledby="practice">
+  <h2 id="practice">Practice</h2>
+  <ol><li>You changed three files but want two separate commits. Describe the commands, in order.</li></ol>
+  <form data-answer data-prompt="practice-1" data-kind="practice">
+    <label for="a-practice-1">Your answer</label>
+    <textarea id="a-practice-1" rows="5"></textarea>
+  </form>
+</section>
+
+<section aria-labelledby="check">
+  <h2 id="check">Mastery check</h2>
+  <p>Answer from memory, without notes. A mastery check has at least five boxes like this one, each a fresh item.</p>
+  <ol><li>You changed app.py and notes.txt but only want app.py in the next commit. Which commands do you run?</li></ol>
+  <form data-answer data-prompt="check-1" data-kind="check">
+    <label for="a-check-1">Your answer</label>
+    <textarea id="a-check-1" rows="4"></textarea>
+  </form>
+  <!-- check-2 to check-5 follow the same pattern, each in its own section or with data-prompt-text. -->
+</section>
+
+<section class="sources" aria-labelledby="sources">
+  <h2 id="sources">Sources</h2>
+  <ol>
+    <li id="s1"><a href="https://git-scm.com/book/en/v2/Git-Basics-Recording-Changes-to-the-Repository">Pro Git, Recording Changes to the Repository</a>: staging and committing.</li>
+  </ol>
+</section>
+<noscript><p>Answer boxes and the finish panel need JavaScript. You can still answer in your chat with your teacher.</p></noscript>
+</main>
+</body>
+</html>

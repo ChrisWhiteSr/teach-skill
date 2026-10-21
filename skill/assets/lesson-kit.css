@@ -1,0 +1,74 @@
+/* teach lesson kit 0.3.0: styles for answer boxes, quizzes and the finish panel.
+   It reads the course's colours when course.css defines them (--ink, --muted, --line, --accent, --soft, --paper)
+   and falls back to its own. Link it after course.css. */
+:root {
+  --kit-ink: var(--ink, #1d2b2f);
+  --kit-muted: var(--muted, #586a6e);
+  --kit-line: var(--line, #ccd6d4);
+  --kit-accent: var(--accent, #1b6b62);
+  --kit-soft: var(--soft, #e8f1ee);
+  --kit-card: var(--card, #fffdf8);
+  --kit-warn: #8a5a0c;
+  --kit-warm: #f4e8c9;
+}
+
+/* quizzes */
+[data-quiz] { margin: 22px 0; padding: 20px; border: 1px solid var(--kit-line); border-radius: 12px; background: var(--kit-card); }
+[data-quiz] button[data-correct] { font: inherit; color: var(--kit-ink); background: var(--kit-card); border: 1px solid var(--kit-line); border-radius: 8px; padding: 10px 14px; margin: 4px 8px 4px 0; cursor: pointer; text-align: left; }
+[data-quiz] button[aria-pressed="true"] { background: var(--kit-ink); color: #fff; border-color: var(--kit-ink); }
+[data-quiz].kit-answered { border-color: var(--kit-accent); }
+[data-quiz] [role=status]:empty { display: none; }
+
+/* answer boxes */
+.kit-answer-box { margin: 22px 0 10px; padding: 18px; border: 1px solid var(--kit-line); border-radius: 12px; background: var(--kit-card); }
+.kit-answer-box label { display: block; margin-bottom: 8px; }
+.kit-answer-box textarea { box-sizing: border-box; width: 100%; min-height: 150px; font: inherit; line-height: 1.5; color: var(--kit-ink); background: #fff; border: 1px solid var(--kit-line); border-radius: 8px; padding: 10px 12px; }
+.kit-actions, .kit-finish-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; margin-top: 12px; }
+.kit-answer-box button, .kit-finish button { font: inherit; border-radius: 8px; padding: 10px 16px; cursor: pointer; border: 1px solid var(--kit-accent); }
+.kit-save, .kit-primary { background: var(--kit-accent); color: #fff; font-weight: 650; }
+.kit-copy, .kit-secondary { background: var(--kit-card); color: var(--kit-accent); font-weight: 600; }
+.kit-answer-box button:disabled, .kit-finish button:disabled { opacity: .5; cursor: default; }
+.kit-status { font-size: .92rem; color: var(--kit-muted); flex: 1; min-width: 200px; }
+.kit-status.ok { color: var(--kit-accent); font-weight: 600; }
+.kit-status.warn { color: var(--kit-warn); }
+.kit-copy-area { width: 100%; min-height: 120px; font: .85rem/1.4 ui-monospace, monospace; margin-top: 8px; }
+.kit-history { margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--kit-line); }
+.kit-history h3 { font-size: .95rem; margin: 0 0 6px; }
+.kit-saved { background: var(--kit-soft); border-radius: 8px; padding: 10px 14px; margin: 8px 0; font-size: .94rem; }
+.kit-answer-text { margin: 0; white-space: pre-wrap; }
+.kit-when, .kit-small { display: block; font-size: .8rem; color: var(--kit-muted); }
+.kit-feedback { margin-top: 10px; padding: 10px 12px; background: var(--kit-card); border: 1px solid var(--kit-line); border-radius: 8px; }
+.kit-feedback p { margin: 6px 0 0; }
+.kit-feedback-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0; }
+.kit-feedback-head .kit-when { display: inline; }
+.kit-judgment { display: inline-block; font-size: .74rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; border: 1px solid currentColor; white-space: nowrap; }
+.kit-judgment.correct { color: var(--kit-accent); background: var(--kit-soft); }
+.kit-judgment.partial { color: var(--kit-warn); background: var(--kit-warm); }
+.kit-judgment.incorrect { color: var(--kit-muted); }
+
+/* finish panel */
+.kit-finish { margin-top: 40px; padding-top: 24px; border-top: 2px solid var(--kit-accent); }
+.kit-finish h3 { margin: 0 0 6px; }
+.kit-finish h4 { margin: 14px 0 4px; font-size: .98rem; }
+.kit-prompts { list-style: none; margin: 0 0 14px; padding: 0; border: 1px solid var(--kit-line); border-radius: 12px; background: var(--kit-card); }
+.kit-prompts li { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--kit-line); }
+.kit-prompts li:first-child { border-top: 0; }
+.kit-dot { flex: none; width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--kit-line); }
+.kit-prompts li.draft .kit-dot { border-color: var(--kit-accent); }
+.kit-prompts li.saved .kit-dot, .kit-prompts li.reviewed .kit-dot { background: var(--kit-accent); border-color: var(--kit-accent); }
+.kit-label { flex: 1; min-width: 0; }
+.kit-label strong { display: block; }
+.kit-finish button.kit-link { padding: 5px 10px; font-size: .9rem; background: none; color: var(--kit-ink); border-color: var(--kit-line); }
+.kit-job { display: flex; align-items: center; gap: 12px; margin: 0; padding: 12px 16px; background: var(--kit-soft); border-radius: 10px; flex: 1; }
+.kit-spinner { flex: none; width: 18px; height: 18px; border-radius: 50%; border: 3px solid var(--kit-line); border-top-color: var(--kit-accent); animation: kit-spin 1s linear infinite; }
+@keyframes kit-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .kit-spinner { animation: none; background: var(--kit-accent); } }
+.kit-result { margin: 16px 0; padding: 16px 20px; background: var(--kit-soft); border-radius: 12px; }
+.kit-result p { margin: 6px 0; }
+.kit-nav { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin: 20px 0 8px; }
+.kit-nav a { display: block; padding: 12px 16px; border: 1px solid var(--kit-line); border-radius: 12px; background: var(--kit-card); color: var(--kit-ink); text-decoration: none; }
+.kit-nav a:hover { border-color: var(--kit-accent); }
+.kit-nav a span:last-child { display: block; font-weight: 650; color: var(--kit-accent); }
+.kit-nav .kit-next { text-align: right; }
+@media (max-width: 620px) { .kit-nav .kit-next { text-align: left; } .kit-prompts li { padding: 12px; } }
+@media print { .kit-actions, .kit-finish, .kit-history { display: none; } }

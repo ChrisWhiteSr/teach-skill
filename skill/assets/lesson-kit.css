@@ -13,6 +13,7 @@
 }
 
 /* quizzes */
+[data-quiz], .kit-answer-box, .kit-prompts, .kit-result { box-sizing: border-box; }
 [data-quiz] { margin: 22px 0; padding: 20px; border: 1px solid var(--kit-line); border-radius: 12px; background: var(--kit-card); }
 [data-quiz] button[data-correct] { font: inherit; color: var(--kit-ink); background: var(--kit-card); border: 1px solid var(--kit-line); border-radius: 8px; padding: 10px 14px; margin: 4px 8px 4px 0; cursor: pointer; text-align: left; }
 [data-quiz] button[aria-pressed="true"] { background: var(--kit-ink); color: #fff; border-color: var(--kit-ink); }

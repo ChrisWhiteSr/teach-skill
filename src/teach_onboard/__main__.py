@@ -1,4 +1,4 @@
-"""teach-onboard: start the onboarding web app."""
+"""teach-onboard: start the onboarding web app, or `teach-onboard serve <course>` to run a course's lessons."""
 from __future__ import annotations
 
 import argparse
@@ -18,8 +18,74 @@ def default_home() -> Path:
     return Path(os.environ.get("TEACH_HOME") or "~/teach-courses").expanduser()
 
 
+def _provider(name, model):
+    try:
+        return make_provider(name, model)
+    except LLMError as e:
+        print(f"error: {e}", file=sys.stderr)
+    except Exception as e:  # missing credentials or SDK extras surface here
+        print(f"error: could not start the {name or 'anthropic'} provider: {e}", file=sys.stderr)
+    return None
+
+
+def serve_main(argv: list[str]) -> int:
+    from .lesson_server import install_kit, serve_lessons
+    from .runner import LessonRunner, RunnerError
+
+    ap = argparse.ArgumentParser(prog="teach-onboard serve",
+                                 description="Serve a course folder's HTML lessons: save answers, get feedback, draft the next lesson.")
+    ap.add_argument("course", type=Path, help="the course folder (the one with MAP.md)")
+    ap.add_argument("--host", default="127.0.0.1", help="interface to listen on (default: this machine only)")
+    ap.add_argument("--port", type=int, default=8766)
+    ap.add_argument("--provider", default=None, help="anthropic (default), bedrock, or fake (offline demo)")
+    ap.add_argument("--model", default=None, help="model id (default: claude-opus-5-5, or its Bedrock profile)")
+    ap.add_argument("--install-kit", action="store_true", help="copy the lesson kit into the course's assets/ first")
+    ap.add_argument("--open", action="store_true", help="open the course page in your browser")
+    args = ap.parse_args(argv)
+
+    course = args.course.expanduser().resolve()
+    if not (course / "MAP.md").is_file():
+        print(f"error: {course} has no MAP.md; point serve at a course folder", file=sys.stderr)
+        return 2
+    if args.install_kit:
+        for p in install_kit(course, overwrite=True):
+            print(f"installed {p}")
+    elif not (course / "assets" / "lesson-kit.js").is_file():
+        print("note: the course has no assets/lesson-kit.js; serving the bundled kit. "
+              "Run with --install-kit so lessons also work as plain files.", file=sys.stderr)
+    provider = _provider(args.provider, args.model)
+    if provider is None:
+        return 2
+    try:
+        runner = LessonRunner(course, provider, load_method())
+    except RunnerError as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 2
+    info = {"provider": provider.name, "model": provider.model, "course": course.name}
+    httpd = serve_lessons(runner, info, args.host, args.port)
+    url = f"http://{'localhost' if args.host in ('127.0.0.1', 'localhost') else args.host}:{httpd.server_address[1]}/"
+    if args.host not in ("127.0.0.1", "localhost", "::1"):
+        print("warning: listening beyond this machine. There is no login; anyone who can reach the port can save "
+              "answers and start model calls.", file=sys.stderr)
+    print(f"teach lessons on {url}  (course: {course}, provider: {provider.name}, model: {provider.model})", flush=True)
+    if args.open:
+        webbrowser.open(url)
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        httpd.server_close()
+        runner.close()
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
-    ap = argparse.ArgumentParser(prog="teach-onboard", description="Set up a mastery-learning course in your browser.")
+    argv = sys.argv[1:] if argv is None else argv
+    if argv[:1] == ["serve"]:
+        return serve_main(argv[1:])
+    ap = argparse.ArgumentParser(prog="teach-onboard", description="Set up a mastery-learning course in your browser. "
+                                 "Run `teach-onboard serve <course folder>` to serve a course's lessons instead.")
     ap.add_argument("--host", default="127.0.0.1", help="interface to listen on (default: this machine only)")
     ap.add_argument("--port", type=int, default=8765)
     ap.add_argument("--courses-dir", type=Path, default=None, help="where courses are saved (default: $TEACH_HOME or ~/teach-courses)")
@@ -30,13 +96,8 @@ def main(argv: list[str] | None = None) -> int:
     args = ap.parse_args(argv)
 
     method = load_method()
-    try:
-        provider = make_provider(args.provider, args.model)
-    except LLMError as e:
-        print(f"error: {e}", file=sys.stderr)
-        return 2
-    except Exception as e:  # missing credentials or SDK extras surface here
-        print(f"error: could not start the {args.provider or 'anthropic'} provider: {e}", file=sys.stderr)
+    provider = _provider(args.provider, args.model)
+    if provider is None:
         return 2
 
     packs = list_packs(packs_dir(), method)
